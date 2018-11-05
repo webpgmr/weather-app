@@ -53,7 +53,7 @@ export class AnalyticsComponent extends AppConstants implements OnInit {
         const currentDate = new Date();
         if (currentDate <= weatherAPIData.expiresAt) {
           this.foreCastData = weatherAPIData.forecastData;
-          
+
         } else {
           this.service.clearBrowserSessions(forecast_API_key);
           locSearchUrl = '?q=' + this.userObj.city + ',' + this.userObj.country + appId ;
@@ -90,92 +90,7 @@ export class AnalyticsComponent extends AppConstants implements OnInit {
         };
         this.service.setToBrowserStorage(forecast_API_key, JSON.stringify(sessionObject));
         this.foreCastData = res;
-        var highChart = Highcharts.chart('chart_container', {
-
-          chart: {
-              scrollablePlotArea: {
-                  minWidth: 700
-              }
-          },
-      
-          data: {
-              
-          },
-      
-          title: {
-              text: ''
-          },
-      
-       
-          xAxis: {
-              tickInterval: 7 * 24 * 3600 * 1000, // one week
-              tickWidth: 0,
-              gridLineWidth: 1,
-              labels: {
-                  align: 'left',
-                  x: 3,
-                  y: -3
-              }
-          },
-      
-          yAxis: [{ // left y axis
-              title: {
-                  text: null
-              },
-              labels: {
-                  align: 'left',
-                  x: 3,
-                  y: 16,
-                  format: '{value:.,0f}'
-              },
-              showFirstLabel: false
-          }, { // right y axis
-              linkedTo: 0,
-              gridLineWidth: 0,
-              opposite: true,
-              title: {
-                  text: null
-              },
-              labels: {
-                  align: 'right',
-                  x: -3,
-                  y: 16,
-                  format: '{value:.,0f}'
-              },
-              showFirstLabel: false
-          }],
-      
-          plotOptions: {
-              series: {
-                  cursor: 'pointer',
-                  point: {
-                      events: {
-                          click: function (e) {
-                              hs.htmlExpand(null, {
-                                  pageOrigin: {
-                                      x: e.pageX || e.clientX,
-                                      y: e.pageY || e.clientY
-                                  },
-                                  headingText: this.series.name,
-                                  maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) + ':<br/> ' +
-                                      this.y + ' sessions',
-                                  width: 200
-                              });
-                          }
-                      }
-                  },
-                  marker: {
-                      lineWidth: 1
-                  }
-              }
-          },
-          legend: {
-            enabled: false
-          },
-          credits: {
-            enabled: false
-          }    
-      });
+        // chart to be implemented
         this.isData = true;
       } else {
         this.foreCastData = {};
