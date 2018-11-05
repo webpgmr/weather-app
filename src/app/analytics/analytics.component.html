@@ -1,0 +1,35 @@
+<section class="main-section">
+  <div class="container">
+    <div class="row" *ngIf="!isData && service.displayError !== undefined">
+      <div class="col">
+        <alert type="danger">
+          <strong>!</strong> {{ service.displayError }}
+        </alert>
+      </div>
+    </div>
+    <div class="row justify-content-center" *ngIf="isData">
+      <div class="col">
+        <legend> Weather Forecast {{ foreCastData.city.name}} , {{ foreCastData.city.country }} </legend>
+        <table class="table">
+          <tr>
+            <th scope="col">Date and time</th>
+            <th scope="col">Weather</th>
+            <th scope="col">Temperature</th>
+            <th scope="col">Wind Direction</th>
+          </tr>
+          <tr *ngFor="let item of foreCastData.list;">
+            <td>{{ item.dt_txt}}</td>
+            <td><img src="/assets/icons/{{item.weather[0].main}}.png"> {{ item.weather[0].description}}</td>
+            <td>{{ item.main.temp}} °F</td>
+            <td>{{ item.wind.deg }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+          <div id="chart_container"></div>
+      </div>
+    </div>
+  </div>
+</section>

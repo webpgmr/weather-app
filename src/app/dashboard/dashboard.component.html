@@ -1,0 +1,53 @@
+<section class="main-section">
+<div class="container">
+  <div class="row justify-content-end">
+    <div class="col3">
+        <div class="form-group">
+            <input [value]='' [(ngModel)]="userObj.city" #city id="city" placeholder="City" type="text" class="form-control"/>
+        </div>
+    </div>
+    <div class="col3">&nbsp;</div>
+    <div class="col3">
+        <button class="btn btn-default" (click)='searchWeather(city.value)'> Search </button>
+    </div>
+  </div>
+  <div class="row" *ngIf="!isData && service.displayError !== undefined">
+    <div class="col">
+      <alert type="danger">
+        <strong>!</strong> {{ service.displayError }}
+      </alert>
+    </div>
+  </div>
+  <div class="row justify-content-end" *ngIf="isData">
+      <div class="col3">
+        <div class="btn-group" btnRadioGroup >
+          <label btnRadio="A" class="btn btn-primary"
+                 tabindex="0" role="button" (click)='tempChange("c")'>°C</label>
+          <label btnRadio="B" class="btn btn-primary"
+                 tabindex="0" role="button" (click)='tempChange("f")'>°F</label>
+        </div>
+      </div>
+  </div>
+  <div class="row justify-content-center" *ngIf="isData" >
+    <div class="col">
+      <legend> Weather in {{ weatherData.city}} , {{ weatherData.country }} </legend>
+      <table class="table">
+        <tr>
+            <th scope="col">Weather</th>
+            <th scope="col">Temperature</th>
+            <th scope="col">Humidity</th>
+            <th scope="col">Wind Speed</th>
+            <th scope="col">Wind Direction</th>
+        </tr>
+        <tr>
+          <td><img src='{{weatherData.icon}}' class='weather_icon'>{{ weatherData.desc}}</td>
+          <td>{{ weatherData.temp }} {{temp}}</td>
+          <td>{{ weatherData.hum }}</td>
+          <td>{{ weatherData.speed }}</td>
+          <td>{{ weatherData.dir }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+</section>
