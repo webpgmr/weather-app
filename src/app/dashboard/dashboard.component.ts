@@ -91,6 +91,12 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
         locSearchUrl = '?q=' + city + appId;
         this.getWeatherInfo(locSearchUrl);
       }
+    } else {
+        weather_API_key = 'weather_' + city;
+        this.service.clearBrowserSessions(weather_API_key);
+        const appId = '&appid=' + this.userObj.api;
+        locSearchUrl = '?q=' + city + appId;
+        this.getWeatherInfo(locSearchUrl);
     }
   }
 
