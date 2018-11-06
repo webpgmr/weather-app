@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppService } from './../app.service';
 import { AppConstants } from './../app.constants';
 import { GeolocationService } from './../app.geoLocationService';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,28 +15,22 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
   public weatherData: any;
   public isData: boolean;
   public subscription: any;
-  public weatherIcons: any;
   public temp: string;
   public userObj: any;
   constructor(
     public service: AppService,
-    public geolocation: GeolocationService ) {
+    public geolocation: GeolocationService,
+    public spinner: Ng4LoadingSpinnerService ) {
     super();
     this.geoLocation = undefined;
     this.weatherData = {};
     this.isData = false;
-    this.weatherIcons = {
-      'Rain': '/assets/icons/rain.png',
-      'Clouds': '/assets/icons/clouds.png',
-      'Clear': '/assets/icons/clear.png',
-      'Sunny': '/assets/icons/sunny.png'
-    };
     this.temp = '°F';
   }
 
   ngOnInit() {
     this.service.displayError = undefined;
-    this.weatherData = {'icon': '', 'desc': '', 'temp': '', 'hum': '', 'speed': '', 'dir': '', 'city': '', 'country': ''};
+    this.spinner.show();
     if (this.service.authenticateUser() ) {
       this.getGeoWeather();
     }
@@ -54,6 +49,7 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
       const currentDate = new Date();
       if ( currentDate <= weatherAPIData.expiresAt ) {
         this.weatherData = weatherAPIData.weatherData;
+        this.spinner.hide();
       } else {
         locSearchUrl = '?q=' + this.userObj.city + ',' + this.userObj.country + appId ;
         this.getWeatherInfo(locSearchUrl);
@@ -79,8 +75,16 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
       weather_API_key = 'weather_' + this.userObj.city;
       const weatherAPIData = JSON.parse(this.service.getFromBrowserStorage(weather_API_key));
       const currentDate = new Date().getTime();
-      if ( currentDate <= weatherAPIData.expiresAt ) {
-        this.populateWeatherData(weatherAPIData.weatherData);
+      if (weatherAPIData !== null ){
+        if ( currentDate <= weatherAPIData.expiresAt ) {
+          this.populateWeatherData(weatherAPIData.weatherData);
+          this.spinner.hide();
+        } else {
+          this.service.clearBrowserSessions(weather_API_key);
+          const appId = '&appid=' + this.userObj.api;
+          locSearchUrl = '?q=' + city + appId;
+          this.getWeatherInfo(locSearchUrl);
+        }
       } else {
         this.service.clearBrowserSessions(weather_API_key);
         const appId = '&appid=' + this.userObj.api;
@@ -107,9 +111,11 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
             weatherData: res
         };
         this.service.setToBrowserStorage(weather_API_key, JSON.stringify(sessionObject));
+        this.spinner.hide();
         this.isData = true;
       } else {
         this.weatherData = {};
+        this.spinner.hide();
         this.isData = false;
         this.service.displayError = 'No Data Available';
       }
@@ -117,14 +123,14 @@ export class DashboardComponent extends AppConstants implements OnInit, OnDestro
   }
 
   populateWeatherData(currentData) {
-    const icon = (currentData.weather[0].main ) ?  currentData.weather[0].main : '';
+    const icon = (currentData.weather[0].icon ) ?  currentData.weather[0].icon : '';
     this.temp = '';
-    this.weatherData.icon = (icon) ? this.weatherIcons[icon] : '';
+    this.weatherData.icon = (icon) ? 'https://openweathermap.org/img/w/' + icon + '.png' : '';
     this.weatherData.desc = (currentData.weather[0].description ) ?  currentData.weather[0].description : '';
     this.weatherData.temp = (currentData.main.temp ) ?  currentData.main.temp : '';
     this.weatherData.hum = (currentData.main.humidity ) ?  currentData.main.humidity : '';
     this.weatherData.speed = (currentData.wind.speed ) ?  currentData.wind.speed : '';
-    this.weatherData.dir = (currentData.wind.deg ) ?  currentData.wind.deg : '';
+    this.weatherData.dir = (currentData.wind.deg ) ?  this.service.degToCompass(currentData.wind.deg) : '';
     this.weatherData.city = (currentData.name ) ?  currentData.name : '';
     this.weatherData.country = (currentData.sys.country ) ?  currentData.sys.country : '';
   }

@@ -14,6 +14,7 @@ export class AppService  extends AppConstants {
   public userName = new BehaviorSubject('');
   public userObj: any;
   public displayError: string;
+  public serverCount: number;
   currentIsUser = this.isUser.asObservable();
 
   constructor(
@@ -22,6 +23,7 @@ export class AppService  extends AppConstants {
   ) {
     super();
     this.displayError = undefined;
+    this.serverCount = 0;
 
   }
 
@@ -48,7 +50,8 @@ export class AppService  extends AppConstants {
    */
   public handleServerResponse(result, message) {
     if (result.cod === '200') {
-      console.log(message);
+      this.serverCount = this.serverCount + 1;
+      console.log(message + 'Count:' + this.serverCount);
     }
   }
 
@@ -107,6 +110,13 @@ export class AppService  extends AppConstants {
 
   public convertFahrenheitToCelsius(value) {
       return Math.round((value - 32) * 5.0 / 9.0);
+  }
+
+  public degToCompass(num) {
+    const val = ((num / 22.5) + .5);
+    const directionArray = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    const direction =  directionArray[Math.floor(val % 16)];
+    return direction;
   }
 
 }

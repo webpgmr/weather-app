@@ -28,22 +28,24 @@
                 </alert>
               </div>
             <div class="form-group">
-              <label for="username"> Name</label>
+              <label for="username"> Name :</label>
               <input value='' [(ngModel)]="userObj.name" id="username" placeholder="Name" type="text" name='name' class="form-control"
                 formControlName="name" />
             </div>
             <div class="form-group">
-              <label for="api">Weather API </label>
+              <label for="api">Weather API :</label>
               <input id="api" value='' [(ngModel)]="userObj.api" placeholder="Weather API" type="text" class="form-control" formControlName="api" />
             </div>
             <div class="form-group">
-              <label>Service Calls </label>
+              <label>Server Calls with API {{ userObj.api }} : </label>
+              <input id="servercalls" value='{{ service.serverCount }}' type="text" class="form-control" [disabled]=true />
             </div>
             <div class="form-group">
+              <label>Clear all API cache : </label>
               <button type="button" id="cache_app" [disabled]='!profileForm.valid' (click)='clearCache()' class="btn btn-primary btn-block m-t-md">Clear Cache</button>
             </div>
             <div class="form-group">
-              <label for="api">Cache Validation Time </label>
+              <label for="api">Cache Validation Time : </label>
               <input id="cache" value='' [(ngModel)]="userObj.expiry" placeholder="Cache Validation Time" type="text" min=0 max=99 class="form-control" formControlName="cache" />
             </div>
             <div class="form-group">

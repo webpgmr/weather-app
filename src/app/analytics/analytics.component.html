@@ -1,5 +1,6 @@
 <section class="main-section">
   <div class="container">
+    <ng4-loading-spinner [loadingText]="'Please wait...'"></ng4-loading-spinner>
     <div class="row" *ngIf="!isData && service.displayError !== undefined">
       <div class="col">
         <alert type="danger">
@@ -19,17 +20,19 @@
           </tr>
           <tr *ngFor="let item of foreCastData.list;">
             <td>{{ item.dt_txt}}</td>
-            <td><img src="/assets/icons/{{item.weather[0].main}}.png"> {{ item.weather[0].description}}</td>
-            <td>{{ item.main.temp}} °F</td>
-            <td>{{ item.wind.deg }}</td>
+            <td><img src="https://openweathermap.org/img/w/{{ item.weather[0].icon }}.png"> {{ item.weather[0].description}}</td>
+            <td>{{ item.main.temp - 273.15 | number:'1.0-0' }} °C</td>
+            <td>{{ service.degToCompass(item.wind.deg) }}</td>
           </tr>
         </table>
       </div>
     </div>
+    <!-- chart is displayed here-->
     <div class="row">
       <div class="col">
-          <div id="chart_container"></div>
+       <canvas id="myChart"></canvas>
       </div>
     </div>
+    <!-- chart is displayed here-->
   </div>
 </section>

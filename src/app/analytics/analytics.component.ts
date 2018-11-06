@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from './../app.service';
 import { AppConstants } from './../app.constants';
 import { GeolocationService } from './../app.geoLocationService';
-import * as Highcharts from 'highcharts';
-
-
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import Chart from 'chart.js';
+declare var Chart: any;
 
 @Component({
   selector: 'app-analytics',
@@ -12,28 +12,29 @@ import * as Highcharts from 'highcharts';
   styleUrls: ['./analytics.component.scss']
 })
 export class AnalyticsComponent extends AppConstants implements OnInit {
-
   public geoLocation: any;
   public foreCastData: any;
   public isData: boolean;
-  public weatherIcons: any;
   public userObj: any;
+  public lineChartData: Array<any>;
+  public lineChartLabels: Array<any>;
+  public lineChartOptions: any;
+  public lineChartType: string;
+  public lineChartLegend: boolean;
+
+
   constructor(
     public service: AppService,
-    public geolocation: GeolocationService ) {
+    public geolocation: GeolocationService,
+    public spinner: Ng4LoadingSpinnerService ) {
     super();
     this.geoLocation = undefined;
     this.foreCastData = {};
     this.isData = false;
-    this.weatherIcons = {
-      'Rain': '/assets/icons/rain.png',
-      'Clouds': '/assets/icons/clouds.png',
-      'Clear': '/assets/icons/clear.png',
-      'Sunny': '/assets/icons/sunny.png'
-    };
-  }
+ }
 
   ngOnInit() {
+    this.spinner.show();
     if (this.service.authenticateUser()) {
       this.getForeCast();
     }
@@ -53,7 +54,8 @@ export class AnalyticsComponent extends AppConstants implements OnInit {
         const currentDate = new Date();
         if (currentDate <= weatherAPIData.expiresAt) {
           this.foreCastData = weatherAPIData.forecastData;
-
+          this.populateChartData(this.foreCastData);
+          this.spinner.hide();
         } else {
           this.service.clearBrowserSessions(forecast_API_key);
           locSearchUrl = '?q=' + this.userObj.city + ',' + this.userObj.country + appId ;
@@ -90,12 +92,58 @@ export class AnalyticsComponent extends AppConstants implements OnInit {
         };
         this.service.setToBrowserStorage(forecast_API_key, JSON.stringify(sessionObject));
         this.foreCastData = res;
-        // chart to be implemented
+        this.populateChartData(res);
+        this.spinner.hide();
         this.isData = true;
       } else {
         this.foreCastData = {};
+        this.spinner.hide();
         this.isData = false;
         this.service.displayError = 'No Data Available';
+      }
+    });
+  }
+
+  populateChartData( res ) {
+    const lists = res.list;
+    let chartData = [];
+    let chartLabels=  [];
+    let date;
+    let tempDate: string;
+
+    lists.forEach(function (value) {
+      //console.log(value);
+      chartData.push(Math.floor(value.main.temp - 273.15)); // converting to Celsius
+      date = new Date(value.dt * 1000);
+      tempDate = date.getHours() + ':0' + date.getMinutes();
+      chartLabels.push(tempDate);
+    });
+    this.drawChart(chartData, chartLabels);
+    console.log(chartData);
+    console.log(chartLabels);
+  }
+
+  drawChart(data, label) {
+    const ctx = "myChart";
+    const myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: label,
+        datasets: [{
+            data: data,
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)'
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+              stacked: true
+          }]
+        },
+        legend: {
+          display: false
+        }
       }
     });
   }

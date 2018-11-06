@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // import app service
 import { AppService } from './app.service';
@@ -18,6 +19,10 @@ import { LoginComponent } from './login/login.component';
 
 // ngx bootstrap modules
 import { AlertModule, ButtonsModule  } from 'ngx-bootstrap';
+
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+
+import { ChartsModule } from 'ng2-charts';
 
 
 
@@ -37,8 +42,11 @@ import { AlertModule, ButtonsModule  } from 'ngx-bootstrap';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule,
     AlertModule.forRoot(),
-    ButtonsModule.forRoot()    
+    ButtonsModule.forRoot(),
+    Ng4LoadingSpinnerModule.forRoot(),
+    ChartsModule
   ],
   providers: [
     AppService,
